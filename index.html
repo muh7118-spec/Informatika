@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Pembelajaran - SMPN 1 Banawa Selatan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Efek custom scrollbar untuk estetika */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #172554; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans flex flex-col min-h-screen relative">
+
+    <!-- Header / Navigasi (Biru Navy) -->
+    <nav class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center flex-wrap">
+            
+            <!-- Logo dan Nama Sekolah -->
+            <div class="flex items-center space-x-3 w-4/5 md:w-auto">
+                <!-- PERUBAHAN: Menambahkan object-contain dan ukuran yang responsif (w-12 h-12 untuk HP, w-14 h-14 untuk Desktop) -->
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg" alt="Logo Sekolah" class="w-12 h-12 md:w-14 md:h-14 object-contain bg-white rounded-full p-1 shadow">
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold leading-tight">SMP NEGERI 1 BANAWA SELATAN</h1>
+                    <p class="text-xs text-blue-200 hidden md:block">Portal Pembelajaran SMP NEGERI 1 BANAWA SELATAN</p>
+                </div>
+            </div>
+            
+            <!-- Tombol Menu Hamburger untuk Tampilan HP -->
+            <div class="md:hidden flex items-center" id="wadah-tombol-menu">
+                <button onclick="toggleMenuMobile()" class="text-white hover:text-yellow-400 focus:outline-none p-1">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Menu Navigasi -->
+            <ul id="menu-navigasi" class="hidden w-full md:flex md:w-auto md:space-x-6 font-medium mt-4 md:mt-0 flex-col md:flex-row space-y-2 md:space-y-0">
+                <li><a href="#materi" onclick="tutupMenuMobile()" class="block py-2 md:py-0 hover:text-yellow-400 transition">Materi Ajar</a></li>
+                <li><a href="#lkpd" onclick="tutupMenuMobile()" class="block py-2 md:py-0 hover:text-yellow-400 transition">LKPD</a></li>
+                <li><a href="#kuis" onclick="tutupMenuMobile()" class="block py-2 md:py-0 hover:text-yellow-400 transition">Kuis Evaluasi</a></li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <!-- Konten Utama -->
+    <main class="container mx-auto mt-8 p-4 flex-grow">
+        
+        <!-- Seksi Materi -->
+        <section id="materi" class="mb-14 transition-all duration-500">
+            <div class="flex items-center mb-6">
+                <div class="h-8 w-2 bg-blue-600 mr-3 rounded"></div>
+                <h2 class="text-2xl font-bold text-gray-800">Materi Ajar</h2>
+            </div>
+            <div id="materi-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="animate-pulse col-span-3 bg-white p-6 rounded-lg shadow"><div class="h-4 bg-gray-300 rounded w-1/2 mb-4"></div><div class="h-3 bg-gray-200 rounded w-full mb-2"></div><div class="h-3 bg-gray-200 rounded w-3/4"></div></div>
+            </div>
+        </section>
+
+        <!-- Seksi LKPD -->
+        <section id="lkpd" class="mb-14 transition-all duration-500">
+            <div class="flex items-center mb-6">
+                <div class="h-8 w-2 bg-yellow-500 mr-3 rounded"></div>
+                <h2 class="text-2xl font-bold text-gray-800">Lembar Kerja Peserta Didik (LKPD)</h2>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-yellow-500">
+                <p class="text-gray-600 mb-5">Silakan unduh dan kerjakan lembar kerja berikut sesuai arahan guru.</p>
+                <div id="lkpd-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p class="text-gray-500 animate-pulse">Mengambil data LKPD dari server...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seksi Kuis (Sistem CBT) -->
+        <section id="kuis" class="mb-14">
+            <div class="flex items-center mb-6">
+                <div class="h-8 w-2 bg-green-500 mr-3 rounded"></div>
+                <h2 class="text-2xl font-bold text-gray-800"> Simulasi Ujian </h2>
+            </div>
+            
+            <div id="status-loading-kuis" class="text-blue-600 mb-4 font-semibold animate-pulse hidden bg-blue-50 p-4 rounded border border-blue-200">
+                Memuat basis data soal...
+            </div>
+
+            <!-- Form Data Diri -->
+            <div id="form-awal" class="bg-white p-8 rounded-xl shadow-md border-t-4 border-blue-900 max-w-2xl mx-auto mt-8">
+                <h3 class="text-xl font-bold text-center mb-6 text-gray-800">Login Ujian</h3>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Nama Lengkap Siswa</label>
+                    <input type="text" id="nama" class="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent transition" placeholder="Masukkan nama lengkap">
+                </div>
+                <div class="mb-8">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Kelas</label>
+                    <select id="kelas" class="shadow-sm border border-gray-300 rounded w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent transition">
+                        <option value="V">Kelas V</option>                        
+                    </select>
+                </div>
+                <button onclick="mulaiKuis()" id="btn-mulai" class="bg-gray-400 cursor-not-allowed text-white px-6 py-3 rounded-lg font-bold w-full transition shadow-lg text-lg" disabled>Mulai Ujian</button>
+            </div>
+
+            <!-- Area Soal CBT (Awalnya Sembunyi) -->
+            <div id="area-soal" class="hidden">
+                <div class="flex flex-col lg:flex-row gap-6">
+                    
+                    <!-- Kiri: Penampil Soal (75%) -->
+                    <div class="lg:w-3/4 bg-white p-6 md:p-8 rounded-xl shadow-md flex flex-col justify-between min-h-[400px]">
+                        <div>
+                            <!-- Header Soal -->
+                            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                                <span class="text-xl font-bold text-gray-800 bg-blue-100 text-blue-900 px-4 py-1 rounded" id="label-nomor-soal">Soal No. 1</span>
+                            </div>
+                            
+                            <!-- Tempat Gambar Soal (Dinamis & Bisa Diklik) -->
+                            <div id="container-gambar" class="mb-6 hidden flex justify-center">
+                                <img id="gambar-soal" src="" alt="Gambar Pendukung Soal" onclick="bukaModalGambar()" title="Klik untuk memperbesar gambar" class="max-h-64 object-contain rounded border shadow-sm cursor-zoom-in hover:opacity-80 transition transform hover:scale-105">
+                                <p class="text-xs text-gray-400 mt-2 text-center w-full block">Klik gambar untuk memperbesar</p>
+                            </div>
+
+                            <!-- Teks Pertanyaan -->
+                            <div id="teks-pertanyaan" class="text-lg md:text-xl text-gray-800 mb-8 font-medium leading-relaxed">
+                                <!-- Pertanyaan dari JS -->
+                            </div>
+
+                            <!-- Pilihan Ganda -->
+                            <div id="opsi-jawaban" class="flex flex-col space-y-3 mb-8">
+                                <!-- Opsi dari JS -->
+                            </div>
+                        </div>
+
+                        <!-- Navigasi Bawah -->
+                        <div class="flex justify-between items-center pt-6 border-t mt-auto">
+                            <button onclick="navigasiSoal(-1)" id="btn-prev" class="bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition flex items-center">
+                                &larr; Sebelumnya
+                            </button>
+                            <button onclick="navigasiSoal(1)" id="btn-next" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center shadow-md">
+                                Selanjutnya &rarr;
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Kanan: Grid Navigasi Nomor (25%) -->
+                    <div class="lg:w-1/4">
+                        <div class="bg-white p-6 rounded-xl shadow-md sticky top-24">
+                            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 text-center">Navigasi Soal</h3>
+                            
+                            <!-- Grid Tombol Nomor -->
+                            <div id="grid-nomor" class="grid grid-cols-4 gap-2 mb-8">
+                                <!-- Render via JS -->
+                            </div>
+
+                            <!-- Keterangan -->
+                            <div class="text-xs text-gray-500 mb-6 space-y-2">
+                                <div class="flex items-center"><span class="w-3 h-3 bg-blue-600 rounded-sm inline-block mr-2"></span> Sedang dibuka</div>
+                                <div class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-sm inline-block mr-2"></span> Sudah dijawab</div>
+                                <div class="flex items-center"><span class="w-3 h-3 border border-gray-300 rounded-sm inline-block mr-2"></span> Belum dijawab</div>
+                            </div>
+                            
+                            <button onclick="konfirmasiKirim()" class="bg-green-600 text-white px-4 py-3 rounded-lg font-bold hover:bg-green-700 w-full transition shadow-lg border-b-4 border-green-800 active:border-b-0 active:mt-1">Selesai & Kirim</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Area Hasil (Awalnya Sembunyi) -->
+            <div id="area-hasil" class="hidden max-w-2xl mx-auto text-center py-12 px-6 border-t-8 border-green-500 bg-white rounded-xl shadow-lg mt-8">
+                <div class="text-green-500 text-6xl mb-4">✓</div>
+                <h3 class="text-3xl font-bold text-gray-800 mb-2">Ujian Selesai!</h3>
+                <p class="text-gray-600 mb-6 text-lg">Terima kasih telah mengerjakan kuis, <span id="nama-hasil" class="font-semibold"></span>.</p>
+                <div class="bg-green-50 rounded-lg p-6 inline-block mb-6 border border-green-100">
+                    <p class="text-gray-600 mb-2 font-medium">Nilai Anda:</p>
+                    <div class="text-7xl font-black text-green-600 drop-shadow-sm" id="nilai-tampil">0</div>
+                </div>
+                <p class="text-md text-gray-500 font-medium p-3 bg-gray-50 rounded" id="status-pengiriman">Mengamankan data ke server pusat...</p>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-950 text-blue-200 py-6 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p class="font-semibold mb-1">SMP NEGERI 1 BANAWA SELATAN</p>
+            <p class="text-sm">&copy; 2026. Komunitas Belajar Soubatik & Tonda Talusi</p>
+        </div>
+    </footer>
+
+    <!-- MODAL POP-UP UNTUK PERBESAR GAMBAR -->
+    <div id="modal-gambar" class="hidden fixed inset-0 z-50 bg-black bg-opacity-90 flex justify-center items-center p-4">
+        <button onclick="tutupModalGambar()" class="absolute top-6 right-6 md:top-10 md:right-10 text-white hover:text-red-500 bg-gray-800 hover:bg-gray-700 rounded-full p-2 focus:outline-none transition z-50 shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <img id="gambar-modal-src" src="" alt="Perbesar Gambar" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl relative z-40">
+    </div>
+
+    <!-- Script Logika -->
+    <script>
+        // URL Web App Google Apps Script
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyf2jqFLAhA_YP4jgqjgDyzWDYXdM3okVaGy-k_7ER8SmeSaNayfEkXvY3K81FtXgePFw/exec';
+
+        let bankSoal = [];
+        let dataSiswa = { nama: "", kelas: "" };
+        let jawabanSiswa = {}; 
+        let indeksSaatIni = 0; 
+
+        window.onload = function() {
+            ambilDataDariDatabase();
+        };
+
+        // Logika Buka/Tutup Menu di HP
+        function toggleMenuMobile() {
+            const menu = document.getElementById('menu-navigasi');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
+        }
+
+        // Otomatis tutup menu jika tautan diklik di HP
+        function tutupMenuMobile() {
+            const menu = document.getElementById('menu-navigasi');
+            if (window.innerWidth < 768) { // Cek apakah di layar HP
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
+        }
+
+        function ambilDataDariDatabase() {
+            const btnMulai = document.getElementById('btn-mulai');
+            const statusLoadingKuis = document.getElementById('status-loading-kuis');
+            statusLoadingKuis.classList.remove('hidden');
+
+            fetch(scriptURL)
+                .then(response => response.json())
+                .then(data => {
+                    renderMateri(data.materi);
+                    renderLkpd(data.lkpd);
+                    bankSoal = data.soal;
+
+                    btnMulai.disabled = false;
+                    btnMulai.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    btnMulai.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                    btnMulai.innerText = "Mulai Ujian";
+                    statusLoadingKuis.classList.add('hidden');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('materi-container').innerHTML = '<p class="text-red-500">Gagal mengambil materi. Periksa koneksi.</p>';
+                    document.getElementById('lkpd-container').innerHTML = '<p class="text-red-500">Gagal mengambil LKPD.</p>';
+                    statusLoadingKuis.innerText = 'Gagal memuat soal. Silakan muat ulang (Refresh).';
+                    statusLoadingKuis.classList.replace('text-blue-600', 'text-red-600');
+                    statusLoadingKuis.classList.replace('bg-blue-50', 'bg-red-50');
+                    statusLoadingKuis.classList.replace('border-blue-200', 'border-red-200');
+                });
+        }
+
+        function renderMateri(dataMateri) {
+            const container = document.getElementById('materi-container');
+            container.innerHTML = ""; 
+            if(!dataMateri || dataMateri.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 col-span-3">Belum ada materi.</p>'; return;
+            }
+            dataMateri.forEach(materi => {
+                container.innerHTML += `
+                    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500 hover:shadow-lg transition">
+                        <h3 class="font-bold text-lg text-gray-800">${materi.judul}</h3>
+                        <p class="text-gray-600 mt-2 text-sm line-clamp-3">${materi.deskripsi}</p>
+                        <a href="${materi.link}" target="_blank" class="mt-4 inline-block bg-blue-100 text-blue-700 px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-600 hover:text-white transition">Pelajari Modul &rarr;</a>
+                    </div>`;
+            });
+        }
+
+        function renderLkpd(dataLkpd) {
+            const container = document.getElementById('lkpd-container');
+            container.innerHTML = ""; 
+            if(!dataLkpd || dataLkpd.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">Belum ada LKPD.</p>'; return;
+            }
+            dataLkpd.forEach(lkpd => {
+                container.innerHTML += `
+                    <a href="${lkpd.link}" target="_blank" class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-yellow-50 hover:text-yellow-700 transition border border-gray-200">
+                        <span class="text-2xl mr-3">📝</span>
+                        <span class="font-semibold text-gray-700">${lkpd.judul}</span>
+                    </a>`;
+            });
+        }
+
+        function bukaModalGambar() {
+            const imgSrc = document.getElementById('gambar-soal').src;
+            document.getElementById('gambar-modal-src').src = imgSrc;
+            document.getElementById('modal-gambar').classList.remove('hidden');
+        }
+
+        function tutupModalGambar() {
+            document.getElementById('modal-gambar').classList.add('hidden');
+            document.getElementById('gambar-modal-src').src = "";
+        }
+
+        function mulaiKuis() {
+            const inputNama = document.getElementById('nama').value;
+            const inputKelas = document.getElementById('kelas').value;
+            
+            if(!inputNama.trim()) {
+                alert("Harap isi nama lengkap terlebih dahulu!"); return;
+            }
+            if(!bankSoal || bankSoal.length === 0) {
+                alert("Soal belum tersedia di sistem."); return;
+            }
+
+            dataSiswa.nama = inputNama;
+            dataSiswa.kelas = inputKelas;
+
+            document.getElementById('form-awal').classList.add('hidden');
+            document.getElementById('materi').classList.add('hidden');
+            document.getElementById('lkpd').classList.add('hidden');
+            
+            // Sembunyikan Navigasi dan Tombol Menu Hamburger agar siswa fokus
+            document.getElementById('menu-navigasi').classList.add('hidden');
+            document.getElementById('wadah-tombol-menu').classList.add('hidden');
+
+            document.getElementById('area-soal').classList.remove('hidden');
+            document.getElementById('area-soal').scrollIntoView({ behavior: 'smooth' });
+
+            renderGridNavigasi();
+            tampilkanSoalBerdasarkanIndeks(0);
+        }
+
+        function tampilkanSoalBerdasarkanIndeks(index) {
+            indeksSaatIni = index;
+            const soal = bankSoal[indeksSaatIni];
+
+            document.getElementById('label-nomor-soal').innerText = `Soal No. ${indeksSaatIni + 1} dari ${bankSoal.length}`;
+
+            const wadahGambar = document.getElementById('container-gambar');
+            const tagGambar = document.getElementById('gambar-soal');
+            if (soal.gambar && soal.gambar.trim() !== "") {
+                tagGambar.src = soal.gambar;
+                wadahGambar.classList.remove('hidden');
+            } else {
+                wadahGambar.classList.add('hidden');
+                tagGambar.src = "";
+            }
+
+            document.getElementById('teks-pertanyaan').innerText = soal.pertanyaan;
+
+            const wadahOpsi = document.getElementById('opsi-jawaban');
+            wadahOpsi.innerHTML = "";
+            
+            for (const [huruf, teks] of Object.entries(soal.opsi)) {
+                const isChecked = jawabanSiswa[soal.id] === huruf ? "checked" : "";
+                
+                wadahOpsi.innerHTML += `
+                    <label class="flex items-start cursor-pointer p-4 rounded-lg border border-gray-200 hover:bg-blue-50 transition ${isChecked ? 'bg-blue-50 border-blue-400' : 'bg-white'}">
+                        <div class="flex items-center h-5">
+                            <input type="radio" name="jawaban" value="${huruf}" onchange="simpanJawaban('${soal.id}', '${huruf}')" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" ${isChecked}>
+                        </div>
+                        <div class="ml-3 text-md">
+                            <span class="font-bold uppercase text-gray-900 mr-1">${huruf}.</span> 
+                            <span class="text-gray-700">${teks}</span>
+                        </div>
+                    </label>
+                `;
+            }
+
+            document.getElementById('btn-prev').disabled = (indeksSaatIni === 0);
+            document.getElementById('btn-next').disabled = (indeksSaatIni === bankSoal.length - 1);
+
+            renderGridNavigasi();
+        }
+
+        function simpanJawaban(idSoal, hurufJawaban) {
+            jawabanSiswa[idSoal] = hurufJawaban;
+            renderGridNavigasi(); 
+            tampilkanSoalBerdasarkanIndeks(indeksSaatIni); 
+        }
+
+        function navigasiSoal(arah) {
+            let indeksBaru = indeksSaatIni + arah;
+            if (indeksBaru >= 0 && indeksBaru < bankSoal.length) {
+                tampilkanSoalBerdasarkanIndeks(indeksBaru);
+            }
+        }
+
+        function lompatKeSoal(index) {
+            tampilkanSoalBerdasarkanIndeks(index);
+        }
+
+        function renderGridNavigasi() {
+            const grid = document.getElementById('grid-nomor');
+            grid.innerHTML = "";
+
+            bankSoal.forEach((soal, index) => {
+                let statusClass = "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"; 
+
+                if (jawabanSiswa[soal.id]) {
+                    statusClass = "bg-green-500 text-white border-green-600 shadow-inner"; 
+                }
+                
+                if (index === indeksSaatIni) {
+                    statusClass = "bg-blue-600 text-white border-blue-700 ring-2 ring-blue-300 ring-offset-1"; 
+                }
+
+                grid.innerHTML += `
+                    <button onclick="lompatKeSoal(${index})" class="w-full py-2 rounded font-bold border transition ${statusClass}">
+                        ${index + 1}
+                    </button>
+                `;
+            });
+        }
+
+        function konfirmasiKirim() {
+            let jumlahTerjawab = Object.keys(jawabanSiswa).length;
+            let belumDijawab = bankSoal.length - jumlahTerjawab;
+
+            let pesan = "";
+            if (belumDijawab > 0) {
+                pesan = `PERHATIAN!\n\nMasih ada ${belumDijawab} soal yang BELUM DIJAWAB.\nApakah Anda benar-benar yakin ingin mengakhiri dan mengirim ujian ini?`;
+            } else {
+                pesan = "Semua soal telah dijawab.\nApakah Anda yakin ingin mengirim ujian ini sekarang?";
+            }
+
+            let konfirmasi = confirm(pesan);
+            
+            if (konfirmasi) {
+                hitungDanKirim();
+            }
+        }
+
+        function hitungDanKirim() {
+            let skorBenar = 0;
+            const totalSoal = bankSoal.length;
+
+            bankSoal.forEach(soal => {
+                if (jawabanSiswa[soal.id] && jawabanSiswa[soal.id] === soal.jawaban) {
+                    skorBenar++;
+                }
+            });
+
+            const nilaiAkhir = Math.round((skorBenar / totalSoal) * 100);
+
+            document.getElementById('area-soal').classList.add('hidden');
+            document.getElementById('area-hasil').classList.remove('hidden');
+            document.getElementById('area-hasil').scrollIntoView({ behavior: 'smooth' });
+            
+            document.getElementById('nama-hasil').innerText = dataSiswa.nama;
+            document.getElementById('nilai-tampil').innerText = nilaiAkhir;
+
+            kirimNilai(dataSiswa.nama, dataSiswa.kelas, "Kuis CBT", nilaiAkhir);
+        }
+
+        function kirimNilai(nama, kelas, jenis, nilai) {
+            const payload = {
+                nama: nama,
+                kelas: kelas,
+                jenis: jenis,
+                nilai: nilai
+            };
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                const statusEl = document.getElementById('status-pengiriman');
+                statusEl.innerText = "✅ Rekam jejak nilai berhasil diamankan di server sekolah.";
+                statusEl.classList.replace('bg-gray-50', 'bg-green-100');
+                statusEl.classList.replace('text-gray-500', 'text-green-700');
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                const statusEl = document.getElementById('status-pengiriman');
+                statusEl.innerText = "❌ Gagal mengunggah ke server. Pastikan koneksi internet stabil.";
+                statusEl.classList.replace('bg-gray-50', 'bg-red-100');
+                statusEl.classList.replace('text-gray-500', 'text-red-700');
+            });
+        }
+    </script>
+</body>
+</html>
+
+
